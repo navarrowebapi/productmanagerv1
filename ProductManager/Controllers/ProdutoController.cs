@@ -47,6 +47,7 @@ namespace ProductManager.Controllers
             catch
             {
                 return View();
+
             }
         }
 
