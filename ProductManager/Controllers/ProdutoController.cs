@@ -25,7 +25,8 @@ namespace ProductManager.Controllers
         // GET: Produto/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var produto = listaDeProdutos.FirstOrDefault(x => x.Id == id);
+            return View(produto);
         }
 
         // GET: Produto/Create
@@ -52,19 +53,50 @@ namespace ProductManager.Controllers
         }
 
         // GET: Produto/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var produto = listaDeProdutos.FirstOrDefault(m => m.Id == id);
+            if (produto == null)
+            {
+                return NotFound();
+            }
+            return View(produto);
         }
 
         // POST: Produto/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, [Bind("Id, Nome, Categoria, Preco")] Produto produto)
         {
             try
             {
-                // TODO: Add update logic here
+                if (id != produto.Id)
+                {
+                    return NotFound();
+                }
+
+                if (ModelState.IsValid)
+                {
+                    //Atualizar produto encontrado na lista
+                    var produtoTemp = listaDeProdutos.FirstOrDefault(c => c.Id == id);
+                    if (produtoTemp != null)
+                    {
+                        produtoTemp.Categoria = produto.Categoria;
+                        produtoTemp.Nome = produto.Nome;
+                        produtoTemp.Preco = produto.Preco;
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -75,19 +107,30 @@ namespace ProductManager.Controllers
         }
 
         // GET: Produto/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var produto = listaDeProdutos.FirstOrDefault(m => m.Id == id);
+            if (produto == null)
+            {
+                return NotFound();
+            }
+            return View(produto);
         }
 
         // POST: Produto/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteConfirm(int id)
         {
             try
             {
-                // TODO: Add delete logic here
+                var produto = listaDeProdutos.FirstOrDefault(m => m.Id == id);
+                listaDeProdutos.Remove(produto);
 
                 return RedirectToAction(nameof(Index));
             }
